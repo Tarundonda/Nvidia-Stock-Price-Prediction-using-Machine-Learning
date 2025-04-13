@@ -1,4 +1,4 @@
-# 📈 Nvidia Stock Price Prediction using Linear Regression
+# 📈 Stock Price Prediction using Linear Regression
 
 ![Banner](https://media.giphy.com/media/3osxYc2axjCJNsCXyE/giphy.gif?cid=ecf05e477qukq00k2ure8fp24j4uweygeo6tv38oe3q0v25e&ep=v1_gifs_search&rid=giphy.gif&ct=g)
 
