@@ -1,0 +1,116 @@
+Code Breakdown
+🔹 1. Importing Libraries
+python
+Copy
+Edit
+import numpy as np
+import pandas as pd
+from sklearn import preprocessing
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+You're importing essential libraries:
+
+numpy, pandas for data handling.
+
+sklearn modules for scaling, splitting, and applying linear regression.
+
+🔹 2. Data Preparation Function
+python
+Copy
+Edit
+def prepare_data(df, forecast_col, forecast_out, test_size):
+This function prepares your stock price data to predict future values using regression.
+
+Inside this function:
+python
+Copy
+Edit
+label = df[forecast_col].shift(-forecast_out)
+➡️ Creates a new "label" column by shifting the 'Close' prices up by forecast_out days (5 here).
+So, today's input (X) will try to predict the price 5 days ahead (Y).
+
+python
+Copy
+Edit
+X = np.array(df[[forecast_col]])
+X = preprocessing.scale(X)
+➡️ X is your feature — the 'Close' price. It's scaled to have mean 0 and standard deviation 1 for better model performance.
+
+python
+Copy
+Edit
+X_lately = X[-forecast_out:]
+X = X[:-forecast_out]
+➡️ Splits the last 5 rows to use later for future prediction (X_lately).
+The remaining data is used for training and testing.
+
+python
+Copy
+Edit
+label.dropna(inplace=True)
+y = np.array(label)
+➡️ Removes the NaN values created by the shift().
+Then converts the label column to an array y.
+
+python
+Copy
+Edit
+X_train, X_test, Y_train, Y_test = train_test_split(X, y, test_size=test_size, random_state=0)
+➡️ Splits the data into:
+
+80% for training
+
+20% for testing
+
+python
+Copy
+Edit
+return [X_train, X_test , Y_train, Y_test , X_lately]
+➡️ Returns everything needed to train the model and later forecast the next 5 prices.
+
+🔹 3. Model Training
+python
+Copy
+Edit
+learner = LinearRegression()
+learner.fit(X_train, Y_train)
+➡️ Initializes a Linear Regression model and trains it using the training set.
+
+🔹 4. Testing & Forecasting
+python
+Copy
+Edit
+score = learner.score(X_test, Y_test)
+forecast = learner.predict(X_lately)
+score is the model’s accuracy (R² score) on test data.
+
+forecast gives the next 5 predicted prices based on the last available price data.
+
+🔹 5. Output
+python
+Copy
+Edit
+response = {
+    'test_score': score,
+    'forecast_set': forecast
+}
+print(response)
+✅ Final Output
+python
+Copy
+Edit
+{'test_score': 0.7634872828651125,
+ 'forecast_set': array([102.4682138 , 101.36718484, 116.18177597, 110.62733137, 113.3881204 ])}
+✨ What This Means:
+R² Score (test_score = 0.76): Your model explains about 76% of the variance in the data. That’s a decent score for financial data which tends to be noisy.
+
+Forecasted Prices: These are the predicted next 5 days' closing prices:
+
+nginx
+Copy
+Edit
+Day 1 → $102.47
+Day 2 → $101.36
+Day 3 → $116.18
+Day 4 → $110.63
+Day 5 → $113.39
